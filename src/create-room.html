@@ -1,0 +1,101 @@
+<html>
+
+<head>
+  <title>Crusoft | Invico</title>
+  <link href="assets/css/icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
+  <link rel="stylesheet" type="text/css" href="assets/css/material.css">
+
+  <!-- <link rel="shortcut icon" type="image/png" href="img/favicon.png"/> -->
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1 0 auto;
+    }
+
+    body {
+      background: #fff;
+    }
+
+    .input-field input[type=date]:focus + label,
+    .input-field input[type=text]:focus + label,
+    .input-field input[type=email]:focus + label,
+    .input-field input[type=password]:focus + label {
+      color: #F26325;
+    }
+
+    .input-field input[type=date]:focus,
+    .input-field input[type=text]:focus,
+    .input-field input[type=email]:focus,
+    .input-field input[type=password]:focus {
+      border-bottom: 2px solid #F26325;
+      box-shadow: none;
+    }
+  </style>
+</head>
+
+<body>
+  
+  <div class="section"></div>
+  <main>
+    <center>
+      <img class="responsive-img" style="width: 250px;" src="assets/img/invico_logo.svg" />
+      <div class="section"></div>
+
+      <h5 class="grey-text">Create your Room</h5>
+      <div class="section"></div>
+
+      <div class="container">
+        
+        <div class="z-depth-1 grey lighten-4 row" style="display: inline-block; padding: 32px 48px 0px 48px; border: 1px solid #EEE;">
+          <p class="alert alert-success" id="room-created" role="alert" hidden></p>
+       
+            
+            <div class='row'>
+              <div class='input-field col s12'>
+                <input type="text" class='validate' id='room-name' />
+                <label for="room-name">Enter Room Name</label>
+              </div>
+            </div>
+
+            <div class='row'>
+              <div class='input-field col s12'>
+                <input type="text" class='validate' id='your-name' />
+                <label for='your-name'>Enter Your Name</label>
+              </div>
+              
+            </div>
+            <label style="float: center;font-size: large;">
+              <b><a class="orange-text" id="err-msg"href="#!"></a></b>
+              <!-- <div class="col-12 col-md-4 offset-md-4 mb-3" id='room-created'></div> -->
+              
+            </label>
+            
+            <br />
+            <center>
+              <div class='row'>
+                <button id='create-room' class='col s12 btn btn-large waves-effect deep-orange'>Create Room</button>
+              </div>
+              
+            </center>
+            
+        </div>
+      </div>
+    </center>
+
+    <div class="section"></div>
+    <div class="section"></div>
+  </main>
+
+  <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/js/materialize.min.js"></script>
+  <script type="module" src="assets/js/room-create.js"></script>
+</body>
+
+</html>

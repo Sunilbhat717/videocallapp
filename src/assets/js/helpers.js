@@ -125,37 +125,40 @@ export default {
         };
     },
 
-
     addChat( data, senderType ) {
-        let chatMsgDiv = document.querySelector( '#chat-messages' );
-        let contentAlign = 'justify-content-end';
+        let chatMsgDiv = document.querySelector( '#chat-area' );
+        let contentAlign = 'message-wrapper reverse';
         let senderName = 'You';
-        let msgBg = 'bg-white';
+        let messageWraper = document.createElement( 'div' );
+        messageWraper.className = contentAlign;
+        let profilePicDiv = document.createElement( 'div' );
+        profilePicDiv.className = 'profile-picture';
+        profilePicDiv.innerHTML = `<img src="https://images.unsplash.com/photo-1581824283135-0666cf353f35?ixlib=rb-1.2.1&auto=format&fit=crop&w=1276&q=80" alt="pp"></img>`;
+        let messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+
+        
 
         if ( senderType === 'remote' ) {
-            contentAlign = 'justify-content-start';
+            contentAlign = 'message-wrapper';
+            messageWraper.className = contentAlign;
             senderName = data.sender;
-            msgBg = '';
-
-            this.toggleChatNotificationBadge();
+            // this.toggleChatNotificationBadge();
         }
-
-        let infoDiv = document.createElement( 'div' );
-        infoDiv.className = 'sender-info';
-        infoDiv.innerHTML = `${ senderName } - ${ moment().format( 'Do MMMM, YYYY h:mm a' ) }`;
+        let timestamp = `${ moment().format( 'h:mm a' ) }`;
 
         let colDiv = document.createElement( 'div' );
-        colDiv.className = `col-10 card chat-card msg ${ msgBg }`;
-        colDiv.innerHTML = xssFilters.inHTMLData( data.msg ).autoLink( { target: "_blank", rel: "nofollow"});
+        let message = data.msg;//xssFilters.inHTMLData( data.msg ).autoLink( { target: "_blank", rel: "nofollow"});
 
-        let rowDiv = document.createElement( 'div' );
-        rowDiv.className = `row ${ contentAlign } mb-2`;
+        messageContent.innerHTML = `<p class="name">${senderName}</p>
+            <div class="message">${message}
+              <div class="timestamp">${timestamp}</div>
+            </div>`;
 
 
-        colDiv.appendChild( infoDiv );
-        rowDiv.appendChild( colDiv );
-
-        chatMsgDiv.appendChild( rowDiv );
+        messageWraper.appendChild( profilePicDiv );
+        messageWraper.appendChild( messageContent );
+        chatMsgDiv.appendChild( messageWraper );
 
         /**
          * Move focus to the newly added message but only if:
@@ -163,7 +166,7 @@ export default {
          * 2. User has not moved scrollbar upward. This is to prevent moving the scroll position if user is reading previous messages.
          */
         if ( this.pageHasFocus ) {
-            rowDiv.scrollIntoView();
+            messageContent.scrollIntoView();
         }
     },
 
@@ -188,47 +191,50 @@ export default {
 
 
 
-    toggleShareIcons( share ) {
-        let shareIconElem = document.querySelector( '#share-screen' );
+    // toggleShareIcons( share ) {
+    //     let shareIconElem = document.querySelector( '#share-screen' );
 
-        if ( share ) {
-            shareIconElem.setAttribute( 'title', 'Stop sharing screen' );
-            shareIconElem.children[0].classList.add( 'text-primary' );
-            shareIconElem.children[0].classList.remove( 'text-white' );
+    //     if ( share ) {
+    //         shareIconElem.setAttribute( 'title', 'Stop sharing screen' );
+    //         shareIconElem.children[0].classList.add( 'text-primary' );
+    //         shareIconElem.children[0].classList.remove( 'text-white' );
+    //     }
+
+    //     else {
+    //         shareIconElem.setAttribute( 'title', 'Share screen' );
+    //         shareIconElem.children[0].classList.add( 'text-white' );
+    //         shareIconElem.children[0].classList.remove( 'text-primary' );
+    //     }
+    // },
+
+
+    // toggleVideoBtnDisabled( disabled ) {
+    //     document.getElementById( 'toggle-video' ).disabled = disabled;
+    // },
+
+    toggleVideoBtn( e ) {
+        
+         let videoListId = document.getElementById(e.target.parentElement.parentElement.id + '-video'); 
+
+        if (videoListId.paused) {
+            videoListId.play();
         }
-
-        else {
-            shareIconElem.setAttribute( 'title', 'Share screen' );
-            shareIconElem.children[0].classList.add( 'text-white' );
-            shareIconElem.children[0].classList.remove( 'text-primary' );
+        else{
+            videoListId.pause();
         }
-    },
-
-
-    toggleVideoBtnDisabled( disabled ) {
-        document.getElementById( 'toggle-video' ).disabled = disabled;
     },
 
 
     maximiseStream( e ) {
-        let elem = e.target.parentElement.previousElementSibling;
+        let elem = document.getElementById(e.target.parentElement.parentElement.id + '-video');  
 
         elem.requestFullscreen() || elem.mozRequestFullScreen() || elem.webkitRequestFullscreen() || elem.msRequestFullscreen();
     },
 
 
     singleStreamToggleMute( e ) {
-        if ( e.target.classList.contains( 'fa-microphone' ) ) {
-            e.target.parentElement.previousElementSibling.muted = true;
-            e.target.classList.add( 'fa-microphone-slash' );
-            e.target.classList.remove( 'fa-microphone' );
-        }
-
-        else {
-            e.target.parentElement.previousElementSibling.muted = false;
-            e.target.classList.add( 'fa-microphone' );
-            e.target.classList.remove( 'fa-microphone-slash' );
-        }
+        let videoListId = document.getElementById(e.target.parentElement.parentElement.id + '-video');   
+        videoListId.muted = !videoListId.muted;
     },
 
 
@@ -261,30 +267,34 @@ export default {
         const localVidElem = document.getElementById( 'local' );
 
         localVidElem.srcObject = stream;
-        mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
+        // mirrorMode ? localVidElem.classList.add( 'mirror-mode' ) : localVidElem.classList.remove( 'mirror-mode' );
     },
 
 
     adjustVideoElemSize() {
-        let elem = document.getElementsByClassName( 'card' );
+        let elem = document.getElementsByClassName( 'video-participant' );
         let totalRemoteVideosDesktop = elem.length;
-        let newWidth = totalRemoteVideosDesktop <= 2 ? '50%' : (
-            totalRemoteVideosDesktop == 3 ? '33.33%' : (
-                totalRemoteVideosDesktop <= 8 ? '25%' : (
-                    totalRemoteVideosDesktop <= 15 ? '20%' : (
-                        totalRemoteVideosDesktop <= 18 ? '16%' : (
-                            totalRemoteVideosDesktop <= 23 ? '15%' : (
-                                totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
-                            )
-                        )
-                    )
-                )
+        let newWidth = totalRemoteVideosDesktop <= 2 ? '300' : (
+            totalRemoteVideosDesktop == 3 ? '200' : (
+                totalRemoteVideosDesktop >= 8 ? '150' : '150'//(
+                    // totalRemoteVideosDesktop <= 15 ? '150' : (
+                    //     totalRemoteVideosDesktop <= 18 ? '16%' : (
+                    //         totalRemoteVideosDesktop <= 23 ? '15%' : (
+                    //             totalRemoteVideosDesktop <= 32 ? '12%' : '10%'
+                    //         )
+                    //     )
+                    // )
+               // )
             )
         );
 
 
         for ( let i = 0; i < totalRemoteVideosDesktop; i++ ) {
-            elem[i].style.width = newWidth;
+            
+            
+            
+            elem[i].getElementsByTagName("video")[0].width =newWidth;
+            elem[i].getElementsByTagName("video")[0].height= newWidth / 1.5;
         }
     },
 

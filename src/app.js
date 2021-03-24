@@ -1,26 +1,34 @@
 let express = require( 'express' );
 let app = express();
-let server = require( 'https' );
-let io = require( 'socket.io' )( server );
-let stream = require( './ws/stream' );
-let path = require( 'path' );
-let favicon = require( 'serve-favicon' );
 let fs = require('fs');
-
-app.use( favicon( path.join( __dirname, 'favicon.ico' ) ) );
-app.use( '/assets', express.static( path.join( __dirname, 'assets' ) ) );
-
-app.get( '/', ( req, res ) => {
-    res.sendFile( __dirname + '/index.html' );
-} );
-
-io.of( '/stream' ).on( 'connection', stream );
-
 const privateKey = fs.readFileSync( 'key.pem' );
 const certificate = fs.readFileSync( 'cert.pem' );
 
 const credentials = {key: privateKey, cert: certificate};
 
-const httpsServer = server.createServer(credentials, app);
+let server = require('https').createServer(credentials, app)
 
-httpsServer.listen( 3000 );
+let io = require( 'socket.io' )( server );
+let stream = require( './ws/stream' );
+let path = require( 'path' );
+let favicon = require( 'serve-favicon' );
+
+app.use( favicon( path.join( __dirname, 'favicon.ico' ) ) );
+app.use( '/assets', express.static( path.join( __dirname, 'assets' ) ) );
+
+app.get( '/', ( req, res ) => {
+    if(req.query.room){
+        res.sendFile( __dirname + '/index.html' );
+    }
+    else{
+        res.redirect('/create');
+    }
+} );
+app.get( '/create', ( req, res ) => {
+    res.sendFile( __dirname + '/create-room.html' );
+} );
+
+
+io.of( '/stream' ).on( 'connection', stream );
+
+server.listen( 3000 );
